@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXPERTA INMOBILIARIA</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+<style>
+:root{
+  --primary-bg:#f7f7f7; --secondary-bg:#e0e0e0;
+  --accent:#999999; --highlight:#555555; --text-color:#000000;
+}
+body{margin:0;padding:0;font-family:Arial,sans-serif;background:var(--primary-bg);color:var(--text-color);}
+nav.site-nav{background:var(--secondary-bg);border-bottom:1px solid #ccc;padding:.5rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+nav.site-nav img.logo{height:50px;}
+nav.site-nav ul{list-style:none;display:flex;gap:1rem;margin:0;padding:0;}
+nav.site-nav ul li a{text-decoration:none;color:var(--text-color);font-weight:500;}
+nav.site-nav ul li a:hover{color:var(--highlight);}
+.hero{background:url('https://source.unsplash.com/1600x600/?realestate,house') center/cover no-repeat;color:var(--text-color);padding:4rem 2rem;text-shadow:0 2px 8px rgba(0,0,0,0.3);text-align:center;}
+.hero h1{margin:0;font-size:2.5rem;}
+.hero p{margin-top:1rem;font-size:1.25rem;}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;padding:2rem 1rem;justify-items:center;}
+.card{border:1px solid #ccc;border-radius:8px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.1);background:var(--secondary-bg);cursor:pointer;transition:transform .2s;width:100%;max-width:250px;}
+.card:hover{transform:translateY(-3px);}
+.card img{width:100%;height:150px;object-fit:cover;}
+.card-content{padding:.5rem;}
+.card-content h3{margin:0 0 .3rem 0;color:var(--text-color);font-size:1rem;}
+.card-content .muted{font-size:.75rem;color:#333;margin-bottom:.3rem;}
+.tag{display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600;margin-right:.5rem;background:var(--highlight);color:white;}
+#detailModal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.8);overflow:auto;padding:2rem;}
+#detailContent{background:#fff;border-radius:8px;max-width:800px;margin:auto;padding:1rem;position:relative;}
+#detailContent img{width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:.5rem;}
+#dClose{position:absolute;right:1rem;top:1rem;cursor:pointer;font-size:1.5rem;}
+#modalGallery{display:flex;gap:.5rem;overflow-x:auto;margin-bottom:1rem;}
+#modalGallery img{flex:0 0 auto;width:80px;height:60px;object-fit:cover;cursor:pointer;border:2px solid #ccc;border-radius:4px;}
+#modalGallery img.selected{border-color:var(--highlight);}
+#modalControls{display:flex;justify-content:space-between;margin-bottom:.5rem;}
+#modalControls button{background:var(--highlight);color:white;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;}
+#modalControls button:hover{background:#333;}
+.whatsapp-btn{display:inline-block;background:#25D366;color:white;padding:.5rem 1rem;border-radius:5px;text-decoration:none;margin-top:1rem;font-weight:bold;}
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <div><img src="assets/logo.png" alt="Experta Inmobiliaria" class="logo"></div>
+  <ul>
+    <li><a href="#inicio" onclick="scrollToSection('inicio')">Inicio</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+<section class="hero" id="inicio">
+<h1>Bienvenido a Experta Inmobiliaria</h1>
+<p>Encuentra la propiedad de tus sueños: compra, venta o alquiler.</p>
+</section>
+
+<section class="cards" id="publicaciones">
+  <!-- Publicaciones aparecerán aquí -->
+</section>
+</main>
+
+<!-- Modal -->
+<div id="detailModal">
+  <div id="detailContent">
+    <span id="dClose">&times;</span>
+    <div id="modalControls">
+      <button id="prevImg">&lt;</button>
+      <button id="nextImg">&gt;</button>
+    </div>
+    <img class="main" src="">
+    <div id="modalGallery"></div>
+    <h3></h3>
+    <p></p>
+    <span class="tag"></span>
+    <div class="muted" id="modalPrecio"></div>
+    <a href="#" target="_blank" id="whatsappBtn" class="whatsapp-btn">Consultar por WhatsApp</a>
+  </div>
+</div>
+
+<script>
+function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+const publicaciones=document.getElementById('publicaciones');
+const modal=document.getElementById('detailModal');
+const mainImg=document.querySelector('#detailContent > img.main');
+const gallery=document.getElementById('modalGallery');
+let currentIndex=0,currentImages=[];
+
+document.getElementById('dClose').onclick=()=> modal.style.display='none';
+
+function openDetail(card){
+  currentImages=card.dataset.images?JSON.parse(card.dataset.images):[card.querySelector('img').src];
+  currentIndex=0; updateModal();
+  document.querySelector('#detailContent h3').textContent=card.querySelector('h3').textContent;
+  document.querySelector('#detailContent p').textContent=card.dataset.descripcion;
+  document.querySelector('#detailContent .tag').textContent=card.querySelector('.tag').textContent;
+  document.getElementById('modalPrecio').textContent='Precio: $'+card.dataset.precio;
+  document.getElementById('whatsappBtn').href=`https://wa.me/591XXXXXXXXX?text=Hola!%20Estoy%20interesado%20en%20el%20inmueble:%20${encodeURIComponent(card.querySelector('h3').textContent)}`;
+  modal.style.display='block';
+}
+
+function updateModal(){
+  mainImg.src=currentImages[currentIndex];
+  gallery.innerHTML='';
+  currentImages.forEach((src,i)=>{
+    const img=document.createElement('img');
+    img.src=src;
+    if(i===currentIndex) img.classList.add('selected');
+    img.onclick=()=>{currentIndex=i;updateModal();};
+    gallery.appendChild(img);
+  });
+}
+
+document.getElementById('prevImg').onclick=()=>{currentIndex=(currentIndex-1+currentImages.length)%currentImages.length;updateModal();}
+document.getElementById('nextImg').onclick=()=>{currentIndex=(currentIndex+1)%currentImages.length;updateModal();}
+
+// Swipe móvil
+let touchStartX=0;
+mainImg.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX;});
+mainImg.addEventListener('touchend',e=>{
+  const diff=e.changedTouches[0].screenX-touchStartX;
+  if(diff>50) currentIndex=(currentIndex-1+currentImages.length)%currentImages.length;
+  else if(diff<-50) currentIndex=(currentIndex+1)%currentImages.length;
+  updateModal();
+});
+
+// Cargar publicaciones desde localStorage
+function loadPublicaciones(){
+  const data=JSON.parse(localStorage.getItem('publicaciones')||'[]');
+  data.forEach(pub=>addCardToPage(pub));
+}
+function addCardToPage(pub){
+  const card=document.createElement('div');
+  card.className='card';
+  card.dataset.images=JSON.stringify(pub.images);
+  card.dataset.descripcion=pub.descripcion;
+  card.dataset.precio=pub.precio;
+  card.onclick=()=>openDetail(card);
+  card.innerHTML=`<img src="${pub.images[0]}" alt="${pub.titulo}">
+  <div class="card-content">
+  <h3>${pub.titulo}</h3>
+  <div class="muted">${pub.ubicacion}</div>
+  <span class="tag">${pub.tipo}</span>
+  <div class="muted">Precio: $${pub.precio}</div>
+  </div>`;
+  publicaciones.appendChild(card);
+}
+loadPublicaciones();
+</script>
+</body>
+</html>
