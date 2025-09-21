@@ -6,25 +6,28 @@
   <title>EXPERTA INMOBILIARIA</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
   <style>
-    :root {
-      --accent: #444;
-      --highlight: #666;
-    }
     body { margin: 0; padding: 0; font-family: Arial, sans-serif; background:#f9f9f9; color:#000;}
     nav.site-nav {
-      background: #fff;
-      border-bottom: 1px solid #eee;
-      padding: 0.5rem 2rem;
-      display: flex; align-items: center; justify-content: space-between;
+      background: #fff; border-bottom: 1px solid #eee;
+      padding: 0.5rem 2rem; display: flex; align-items: center; justify-content: space-between;
     }
-    nav.site-nav img.logo {
-      height: 50px;
-    }
-    nav.site-nav ul {
-      list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0;
-    }
+    nav.site-nav img.logo { height: 50px; }
+    nav.site-nav ul { list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; }
+    nav.site-nav ul li { position: relative; }
     nav.site-nav ul li a { text-decoration: none; color: #333; font-weight: 500; }
-    nav.site-nav ul li a:hover { color: var(--accent); }
+    nav.site-nav ul li a:hover { color: #000; }
+    /* Dropdown */
+    .dropdown-content {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: #fff; border: 1px solid #ddd; border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 10;
+    }
+    .dropdown-content a {
+      display: block; padding: 0.5rem 1rem; color: #333; text-decoration: none;
+    }
+    .dropdown-content a:hover { background:#eee; }
+    .dropdown:hover .dropdown-content { display: block; }
+
     .hero {
       background: #ddd url('https://source.unsplash.com/1600x600/?realestate,house') center/cover no-repeat;
       color: white; padding: 4rem 2rem; text-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-bottom: 2rem;
@@ -32,54 +35,42 @@
     }
     .hero h1 { margin: 0; font-size: 2.5rem; }
     .hero p { margin-top: 1rem; font-size: 1.25rem; }
-
-    /* Categorías */
-    .tabs { display:flex; justify-content:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap; }
-    .tabs button {
-      background:#fff; border:1px solid #ccc; padding:.5rem 1rem; border-radius:4px; cursor:pointer;
-    }
-    .tabs button.active { background:#333; color:white; }
-
-    /* Publicaciones */
     .cards { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; padding: 0 2rem;}
     .card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: #fff; cursor:pointer;}
     .card img { width:100%; height:200px; object-fit:cover; }
     .card-content { padding: 1rem; }
     .card-content h3 { margin: 0 0 .5rem 0; }
     .card-content .muted { font-size: .9rem; color: #666; margin-bottom: .5rem; }
-
-    /* Modal Detalles */
-    #detailModal {
-      display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); overflow: auto; padding: 2rem;
-    }
-    #detailContent {
-      background: #fff; border-radius: 8px; max-width: 700px; margin: auto; padding: 1rem; color:#000;
-    }
-    #detailContent img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem; }
-    #dClose { float: right; cursor: pointer; font-size: 1.5rem; }
-
-    footer.site-footer { background: #f1f1f1; padding: 2rem; margin-top: 3rem; color: #555; text-align: center; }
-    footer img.footer-logo { height: 40px; margin-bottom: 1rem; }
-    .socials a { margin-right: .5rem; text-decoration: none; color: #555; }
-    .socials a:hover { color: var(--accent); }
-
+    /* Modal */
+    #detailModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); overflow:auto; padding:2rem;}
+    #detailContent { background:#fff; border-radius:8px; max-width:700px; margin:auto; padding:1rem; color:#000;}
+    #detailContent img { width:100%; height:300px; object-fit:cover; border-radius:8px; margin-bottom:1rem;}
+    #dClose { float:right; cursor:pointer; font-size:1.5rem; }
+    footer.site-footer { background:#f1f1f1; padding:2rem; margin-top:3rem; color:#555; text-align:center; }
+    footer img.footer-logo { height:40px; margin-bottom:1rem; }
+    .socials a { margin-right:.5rem; text-decoration:none; color:#555; }
+    .socials a:hover { color:#000; }
     .detail-info { margin-bottom:1rem; }
     .detail-info strong { display:block; margin-bottom:.2rem; }
-    .whatsapp-btn {
-      display:inline-block; padding:.7rem 1.2rem; background:#25D366; color:white; border-radius:6px; text-decoration:none; font-weight:bold;
-    }
+    .whatsapp-btn { display:inline-block; padding:.7rem 1.2rem; background:#25D366; color:white; border-radius:6px; text-decoration:none; font-weight:bold;}
     .whatsapp-btn:hover{background:#1ebe5a;}
   </style>
 </head>
 <body>
   <nav class="site-nav">
-    <div>
-      <img id="logo" src="assets/logo.png" alt="Experta Inmobiliaria" class="logo">
-    </div>
+    <div><img id="logo" src="assets/logo.png" alt="Experta Inmobiliaria" class="logo"></div>
     <ul>
       <li><a href="#inicio">Inicio</a></li>
-      <li><a href="#categorias">Categorías</a></li>
+      <li class="dropdown">
+        <a href="#">Menú ▾</a>
+        <div class="dropdown-content">
+          <a href="#" onclick="filterCategory('Todos')">Todos</a>
+          <a href="#" onclick="filterCategory('Venta')">Venta</a>
+          <a href="#" onclick="filterCategory('Alquiler')">Alquiler</a>
+          <a href="#" onclick="filterCategory('Anticrético')">Anticrético</a>
+          <a href="#" onclick="filterCategory('Autos')">Autos</a>
+        </div>
+      </li>
       <li><a href="#contacto">Contáctenos</a></li>
       <li><a href="admin.html">Admin</a></li>
     </ul>
@@ -90,16 +81,7 @@
       <h1>Bienvenido a Experta Inmobiliaria</h1>
       <p>Alquiler, Anticrético y Ventas</p>
     </section>
-
-    <!-- Tabs categorías -->
-    <section id="categorias">
-      <div class="tabs">
-        <button class="active" onclick="filterCategory('Todos')">Todos</button>
-        <button onclick="filterCategory('Venta')">Venta</button>
-        <button onclick="filterCategory('Alquiler')">Alquiler</button>
-        <button onclick="filterCategory('Anticrético')">Anticrético</button>
-        <button onclick="filterCategory('Autos')">Autos</button>
-      </div>
+    <section>
       <div class="cards" id="publicaciones"></div>
     </section>
   </main>
@@ -120,50 +102,35 @@
   <footer class="site-footer">
     <img id="footerLogo" src="assets/logo.png" alt="Experta Inmobiliaria" class="footer-logo">
     <p>© 2025 Experta Inmobiliaria. Todos los derechos reservados.</p>
-    <div class="socials">
-      <a href="#">Facebook</a>
-      <a href="#">Instagram</a>
-      <a href="#">TikTok</a>
-    </div>
+    <div class="socials"><a href="#">Facebook</a><a href="#">Instagram</a><a href="#">TikTok</a></div>
   </footer>
 
 <script>
-/* ====== Logo dinámico ====== */
+/* Logo dinámico */
 const savedLogo = localStorage.getItem('logo');
-if (savedLogo) {
-  document.getElementById('logo').src = savedLogo;
-  document.getElementById('footerLogo').src = savedLogo;
-}
+if (savedLogo) { document.getElementById('logo').src = savedLogo; document.getElementById('footerLogo').src = savedLogo; }
 
-/* ====== Renderizar publicaciones ====== */
+/* Publicaciones */
 let publicaciones = JSON.parse(localStorage.getItem('publicaciones')||'[]');
-let currentCategory = 'Todos';
-
+let currentCategory='Todos';
 function renderPublicaciones(){
-  const container=document.getElementById('publicaciones');
-  container.innerHTML='';
-  publicaciones
-    .filter(pub=> currentCategory==='Todos' || pub.tipo===currentCategory )
-    .forEach((pub,i)=>{
-      const card=document.createElement('div');
-      card.className='card';
-      card.innerHTML=`
-        <img src="${pub.images[0]}" alt="">
-        <div class="card-content">
-          <h3>${pub.titulo}</h3>
-          <p class="muted">${pub.tipo}</p>
-          <p><strong>${pub.precio}</strong></p>
-        </div>`;
-      card.onclick=()=>showDetail(pub);
-      container.appendChild(card);
-    });
+  const container=document.getElementById('publicaciones'); container.innerHTML='';
+  publicaciones.filter(pub=> currentCategory==='Todos'|| pub.tipo===currentCategory )
+  .forEach(pub=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <img src="${pub.images[0]}" alt="">
+      <div class="card-content">
+        <h3>${pub.titulo}</h3>
+        <p class="muted">${pub.tipo}</p>
+        <p><strong>${pub.precio}</strong></p>
+      </div>`;
+    card.onclick=()=>showDetail(pub);
+    container.appendChild(card);
+  });
 }
-function filterCategory(cat){
-  currentCategory=cat;
-  document.querySelectorAll('.tabs button').forEach(btn=>btn.classList.remove('active'));
-  document.querySelector(`.tabs button[onclick="filterCategory('${cat}')"]`).classList.add('active');
-  renderPublicaciones();
-}
+function filterCategory(cat){ currentCategory=cat; renderPublicaciones(); }
 function showDetail(pub){
   document.getElementById('detailModal').style.display='block';
   document.getElementById('dTitle').textContent=pub.titulo;
@@ -176,7 +143,6 @@ function showDetail(pub){
 }
 document.getElementById('dClose').onclick=()=>{document.getElementById('detailModal').style.display='none';}
 window.onclick=e=>{if(e.target==document.getElementById('detailModal')){document.getElementById('detailModal').style.display='none';}};
-
 renderPublicaciones();
 </script>
 </body>

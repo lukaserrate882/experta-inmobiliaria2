@@ -8,67 +8,162 @@
 <style>
 body{margin:0;padding:2rem;font-family:Arial,sans-serif;background:#f7f7f7;color:#000;}
 header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;}
-header img{height:50px;}
+header img{height:50px;border-radius:5px;}
 header a{text-decoration:none;font-size:1rem;background:#555;color:white;padding:.5rem 1rem;border-radius:4px;}
 header a:hover{background:#333;}
 form{max-width:600px;margin:auto;background:#e0e0e0;padding:2rem;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 input,textarea,select{width:100%;padding:.5rem;margin-bottom:1rem;border-radius:4px;border:1px solid #ccc;}
 button{background:#555;color:white;border:none;padding:.7rem 1.5rem;border-radius:4px;cursor:pointer;}
 button:hover{background:#333;}
+label{font-weight:bold;margin-bottom:.3rem;display:block;}
+/* Listado */
+#listado{max-width:900px;margin:2rem auto;}
+table{width:100%;border-collapse:collapse;background:#fff;}
+th,td{border:1px solid #ccc;padding:.7rem;text-align:left;}
+th{background:#f0f0f0;}
+img.thumb{height:50px;width:70px;object-fit:cover;border-radius:4px;}
+.action-btn{background:#c62828;color:white;padding:.3rem .7rem;border:none;border-radius:4px;cursor:pointer;}
+.action-btn:hover{background:#a00;}
 </style>
 </head>
 <body>
+
 <header>
-  <img src="assets/logo.png" alt="Experta Inmobiliaria">
+  <img id="logo" src="assets/logo.png" alt="Experta Inmobiliaria">
   <a href="index.html">&larr; Volver a la página principal</a>
 </header>
+
 <h2 style="text-align:center;">Panel Admin</h2>
-<form id="adminForm">
-<input type="text" name="titulo" placeholder="Título del inmueble" required>
-<textarea name="descripcion" placeholder="Descripción" rows="3" required></textarea>
-<input type="text" name="ubicacion" placeholder="Ubicación" required>
-<input type="number" name="precio" placeholder="Precio (USD)" required>
-<select name="tipo">
-<option value="Venta">Venta</option>
-<option value="Alquiler">Alquiler</option>
-<option value="Anticrético">Anticrético</option>
-</select>
-<input type="file" name="fotos" accept="image/*" multiple required>
-<button type="submit">Agregar Propiedad</button>
+
+<!-- Cambiar Logo -->
+<form id="logoForm">
+  <label for="logoFile">Cambiar Logo:</label>
+  <input type="file" id="logoFile" accept="image/*">
+  <button type="submit">Actualizar Logo</button>
 </form>
 
+<hr>
+
+<!-- Agregar Propiedad -->
+<form id="adminForm">
+  <input type="text" name="titulo" placeholder="Título del inmueble" required>
+  <textarea name="descripcion" placeholder="Descripción" rows="3" required></textarea>
+  <input type="text" name="ubicacion" placeholder="Ubicación" required>
+
+  <div style="display:flex; gap:.5rem;">
+    <input type="number" name="precio" placeholder="Precio" required style="flex:2;">
+    <select name="moneda" style="flex:1;">
+      <option value="USD">USD</option>
+      <option value="BOB">BOB</option>
+    </select>
+  </div>
+
+  <select name="tipo">
+    <option value="Venta">Venta</option>
+    <option value="Alquiler">Alquiler</option>
+    <option value="Anticrético">Anticrético</option>
+    <option value="Autos">Autos</option>
+  </select>
+
+  <input type="file" name="fotos" accept="image/*" multiple required>
+  <button type="submit">Agregar Propiedad</button>
+</form>
+
+<!-- Listado de publicaciones -->
+<section id="listado">
+  <h3>Publicaciones existentes</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Imagen</th>
+        <th>Título</th>
+        <th>Categoría</th>
+        <th>Precio</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody id="tablaPublicaciones"></tbody>
+  </table>
+</section>
+
 <script>
+/* ========== Cambiar Logo ========== */
+const logoImg=document.getElementById('logo'); 
+const logoForm=document.getElementById('logoForm');
+logoForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const file=document.getElementById('logoFile').files[0];
+  if(!file){ alert('Selecciona una imagen'); return; }
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    logoImg.src=ev.target.result;
+    localStorage.setItem('logo',ev.target.result);
+    alert('Logo actualizado');
+  };
+  reader.readAsDataURL(file);
+});
+const savedLogo=localStorage.getItem('logo'); if(savedLogo){ logoImg.src=savedLogo; }
+
+/* ========== Manejo de Publicaciones ========== */
 const form=document.getElementById('adminForm');
+const tabla=document.getElementById('tablaPublicaciones');
+let publicaciones=JSON.parse(localStorage.getItem('publicaciones')||'[]');
+
+function renderTabla(){
+  tabla.innerHTML='';
+  publicaciones.forEach((pub,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><img src="${pub.images[0]}" class="thumb"></td>
+      <td>${pub.titulo}</td>
+      <td>${pub.tipo}</td>
+      <td>${pub.precio}</td>
+      <td><button class="action-btn" onclick="eliminarPub(${i})">Eliminar</button></td>
+    `;
+    tabla.appendChild(tr);
+  });
+}
+
+function eliminarPub(index){
+  if(confirm("¿Seguro que deseas eliminar esta publicación?")){
+    publicaciones.splice(index,1);
+    localStorage.setItem('publicaciones',JSON.stringify(publicaciones));
+    renderTabla();
+    alert("Publicación eliminada");
+  }
+}
+
 form.addEventListener('submit',e=>{
   e.preventDefault();
   const files=Array.from(form.fotos.files);
   if(files.length===0){alert('Selecciona al menos una imagen'); return;}
-  const images=[];
-  let loaded=0;
+  const images=[]; let loaded=0;
   files.forEach(file=>{
     const reader=new FileReader();
     reader.onload=event=>{
-      images.push(event.target.result);
-      loaded++;
+      images.push(event.target.result); loaded++;
       if(loaded===files.length){
         const pub={
           titulo:form.titulo.value,
           descripcion:form.descripcion.value,
           ubicacion:form.ubicacion.value,
           tipo:form.tipo.value,
-          precio:form.precio.value,
+          precio:form.precio.value + ' ' + form.moneda.value,
           images:images
         };
-        const data=JSON.parse(localStorage.getItem('publicaciones')||'[]');
-        data.push(pub);
-        localStorage.setItem('publicaciones',JSON.stringify(data));
-        alert('Propiedad agregada. Ahora ve a la página principal.');
+        publicaciones.push(pub);
+        localStorage.setItem('publicaciones',JSON.stringify(publicaciones));
+        renderTabla();
+        alert('Propiedad agregada.');
         form.reset();
       }
     };
     reader.readAsDataURL(file);
   });
 });
+
+/* Render inicial */
+renderTabla();
 </script>
 </body>
 </html>
