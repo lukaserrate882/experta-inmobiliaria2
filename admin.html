@@ -7,6 +7,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
 <style>
 body{margin:0;padding:2rem;font-family:Arial,sans-serif;background:#f7f7f7;color:#000;}
+header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;}
+header img{height:50px;}
+header a{text-decoration:none;font-size:1rem;background:#555;color:white;padding:.5rem 1rem;border-radius:4px;}
+header a:hover{background:#333;}
 form{max-width:600px;margin:auto;background:#e0e0e0;padding:2rem;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 input,textarea,select{width:100%;padding:.5rem;margin-bottom:1rem;border-radius:4px;border:1px solid #ccc;}
 button{background:#555;color:white;border:none;padding:.7rem 1.5rem;border-radius:4px;cursor:pointer;}
@@ -14,6 +18,10 @@ button:hover{background:#333;}
 </style>
 </head>
 <body>
+<header>
+  <img src="assets/logo.png" alt="Experta Inmobiliaria">
+  <a href="index.html">&larr; Volver a la página principal</a>
+</header>
 <h2 style="text-align:center;">Panel Admin</h2>
 <form id="adminForm">
 <input type="text" name="titulo" placeholder="Título del inmueble" required>
