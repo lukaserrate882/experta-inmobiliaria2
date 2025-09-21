@@ -29,8 +29,8 @@ nav.site-nav ul li a:hover{color:var(--highlight);}
 .card-content .muted{font-size:.75rem;color:#333;margin-bottom:.3rem;}
 .tag{display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600;margin-right:.5rem;background:var(--highlight);color:white;}
 #detailModal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.8);overflow:auto;padding:2rem;}
-#detailContent{background:#fff;border-radius:8px;max-width:800px;margin:auto;padding:1rem;position:relative;}
-#detailContent img{width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:.5rem;}
+#detailContent{background:#fff;border-radius:8px;max-width:800px;margin:auto;padding:1rem;position:relative;color:#000;}
+#detailContent img{width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:1rem;}
 #dClose{position:absolute;right:1rem;top:1rem;cursor:pointer;font-size:1.5rem;}
 #modalGallery{display:flex;gap:.5rem;overflow-x:auto;margin-bottom:1rem;}
 #modalGallery img{flex:0 0 auto;width:80px;height:60px;object-fit:cover;cursor:pointer;border:2px solid #ccc;border-radius:4px;}
@@ -38,6 +38,7 @@ nav.site-nav ul li a:hover{color:var(--highlight);}
 #modalControls{display:flex;justify-content:space-between;margin-bottom:.5rem;}
 #modalControls button{background:var(--highlight);color:white;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;}
 #modalControls button:hover{background:#333;}
+.modal-text{margin-bottom:.7rem;}
 .whatsapp-btn{display:inline-block;background:#25D366;color:white;padding:.5rem 1rem;border-radius:5px;text-decoration:none;margin-top:1rem;font-weight:bold;}
 </style>
 </head>
@@ -70,10 +71,11 @@ nav.site-nav ul li a:hover{color:var(--highlight);}
     </div>
     <img class="main" src="">
     <div id="modalGallery"></div>
-    <h3></h3>
-    <p></p>
+    <h3 class="modal-text"></h3>
+    <p class="modal-text" id="modalDescripcion"></p>
+    <div class="modal-text" id="modalUbicacion"></div>
+    <div class="modal-text" id="modalPrecio"></div>
     <span class="tag"></span>
-    <div class="muted" id="modalPrecio"></div>
     <a href="#" target="_blank" id="whatsappBtn" class="whatsapp-btn">Consultar por WhatsApp</a>
   </div>
 </div>
@@ -92,10 +94,14 @@ function openDetail(card){
   currentImages=card.dataset.images?JSON.parse(card.dataset.images):[card.querySelector('img').src];
   currentIndex=0; updateModal();
   document.querySelector('#detailContent h3').textContent=card.querySelector('h3').textContent;
-  document.querySelector('#detailContent p').textContent=card.dataset.descripcion;
-  document.querySelector('#detailContent .tag').textContent=card.querySelector('.tag').textContent;
+  document.getElementById('modalDescripcion').textContent=card.dataset.descripcion;
+  document.getElementById('modalUbicacion').textContent='Ubicación: '+card.dataset.ubicacion;
   document.getElementById('modalPrecio').textContent='Precio: $'+card.dataset.precio;
-  document.getElementById('whatsappBtn').href=`https://wa.me/591XXXXXXXXX?text=Hola!%20Estoy%20interesado%20en%20el%20inmueble:%20${encodeURIComponent(card.querySelector('h3').textContent)}`;
+  document.querySelector('#detailContent .tag').textContent=card.querySelector('.tag').textContent;
+
+  const mensaje=encodeURIComponent(`Hola, me interesa este inmueble, quisiera agendar una cita para verlo porfavor. Inmueble: ${card.querySelector('h3').textContent}`);
+  document.getElementById('whatsappBtn').href=`https://wa.me/59161680077?text=${mensaje}`;
+
   modal.style.display='block';
 }
 
@@ -134,6 +140,7 @@ function addCardToPage(pub){
   card.className='card';
   card.dataset.images=JSON.stringify(pub.images);
   card.dataset.descripcion=pub.descripcion;
+  card.dataset.ubicacion=pub.ubicacion;
   card.dataset.precio=pub.precio;
   card.onclick=()=>openDetail(card);
   card.innerHTML=`<img src="${pub.images[0]}" alt="${pub.titulo}">
