@@ -1,15 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EXPERTA INMOBILIARIA</title>
+  <style>
+    :root {
+      --accent: #555;
+      --highlight: #999;
+      --bg: #fff;
+    }
+    body { margin:0; font-family:Arial, sans-serif; background:var(--bg); color:#000; }
+    nav.site-nav {
+      background:#fff; border-bottom:1px solid #eee; padding:0.5rem 2rem;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:100;
+    }
+    nav.site-nav img.logo { height:50px; }
+    nav.site-nav ul { list-style:none; display:flex; gap:1rem; margin:0; padding:0; }
+    nav.site-nav ul li { position:relative; }
+    nav.site-nav ul li a { text-decoration:none; color:#000; font-weight:500; }
+    nav.site-nav ul li a:hover { color:var(--accent); }
+
+    /* Dropdown Menu */
+    .dropdown-content {
+      display:none; position:absolute; background:#fff; min-width:160px;
+      box-shadow:0 2px 5px rgba(0,0,0,0.15); padding:0; margin:0; z-index:200;
+    }
+    .dropdown-content a {
+      display:block; padding:10px; color:#000; text-decoration:none;
+    }
+    .dropdown-content a:hover { background:#f0f0f0; }
+    .dropdown:hover .dropdown-content { display:block; }
+
+    /* Hero */
+    .hero { position:relative; height:400px; overflow:hidden; }
+    .hero img {
+      position:absolute; width:100%; height:100%; object-fit:cover;
+      opacity:0; transition:opacity 1s ease;
+    }
+    .hero img.active { opacity:1; }
+    .hero-text {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      color:white; text-align:center; text-shadow:0 2px 8px rgba(0,0,0,0.7);
+    }
+    .hero-text h1 { margin:0; font-size:2.5rem; }
+    .hero-text p { margin-top:1rem; font-size:1.2rem; }
+
+    /* Publicaciones */
+    .contenedor {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:1rem; padding:2rem;
+    }
+    .card {
+      border:1px solid #ddd; border-radius:8px; overflow:hidden;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1); background:#fff;
+      cursor:pointer; transition:transform .2s;
+    }
+    .card:hover { transform:scale(1.02); }
+    .card img { width:100%; height:200px; object-fit:cover; }
+    .card h3 { margin:.5rem; }
+
+    /* Detalle */
+    #detalle {
+      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.7); align-items:center; justify-content:center;
+      z-index:1000;
+    }
+    #detalleContent {
+      background:#fff; border-radius:8px; padding:1rem; max-width:700px;
+      width:90%; max-height:90%; overflow:auto; position:relative;
+    }
+    #detalleImg { width:100%; height:300px; object-fit:cover; border-radius:8px; }
+    .detalle-info p { margin:.5rem 0; font-size:1rem; color:#000; }
+    .cerrar { position:absolute; top:10px; right:15px; font-size:1.5rem; cursor:pointer; }
+    .nav-btn {
+      background:#333; color:white; border:none; padding:5px 10px; cursor:pointer;
+      margin:5px; border-radius:4px;
+    }
+
+    /* Admin */
+    #admin { display:none; padding:2rem; }
+    #admin form input, #admin form textarea, #admin form select {
+      display:block; width:100%; margin-bottom:1rem; padding:.5rem;
+      border:1px solid #ccc; border-radius:4px;
+    }
+    #adminListado .admin-item {
+      border:1px solid #ddd; padding:.5rem; margin:.5rem 0;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    #adminListado img { width:60px; height:60px; object-fit:cover; margin-right:.5rem; }
+    .admin-btns button {
+      margin-left:.5rem; padding:.3rem .6rem; cursor:pointer;
+    }
+
+    footer.site-footer {
+      background:#f9f9f9; padding:2rem; text-align:center; color:#555; margin-top:2rem;
+    }
+    footer img.footer-logo { height:40px; margin-bottom:1rem; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="site-nav">
+    <div><img id="logo" src="assets/logo.png" alt="Experta Inmobiliaria" class="logo"></div>
+    <ul>
+      <li><a href="#inicio">Inicio</a></li>
+      <li class="dropdown">
+        <a href="#">Menú</a>
+        <div class="dropdown-content">
+          <a href="#" onclick="filtrarCategoria('todas')">Todas</a>
+          <a href="#" onclick="filtrarCategoria('Venta')">Ventas</a>
+          <a href="#" onclick="filtrarCategoria('Alquiler')">Alquileres</a>
+          <a href="#" onclick="filtrarCategoria('Anticrético')">Anticrético</a>
+          <a href="#" onclick="filtrarCategoria('Autos')">Autos</a>
+        </div>
+      </li>
+      <li><a href="#" onclick="accederAdmin()">Admin</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="inicio">
+    <img src="https://source.unsplash.com/1600x600/?house" class="active">
+    <img src="https://source.unsplash.com/1600x600/?apartment">
+    <img src="https://source.unsplash.com/1600x600/?realestate">
+    <div class="hero-text">
+      <h1>Experta Inmobiliaria</h1>
+      <p>Alquiler, Anticrético y Ventas</p>
+    </div>
+  </section>
+
+  <!-- Publicaciones -->
+  <div class="contenedor" id="publicaciones"></div>
+
+  <!-- Modal Detalle -->
+  <div id="detalle">
+    <div id="detalleContent">
+      <span class="cerrar" onclick="cerrarDetalle()">×</span>
+      <img id="detalleImg">
+      <div>
+        <button class="nav-btn" onclick="cambiarFoto(-1)">⟵</button>
+        <button class="nav-btn" onclick="cambiarFoto(1)">⟶</button>
+      </div>
+      <div class="detalle-info">
+        <p><strong>Descripción:</strong> <span id="detalleDesc"></span></p>
+        <p><strong>Ubicación:</strong> <span id="detalleUbicacion"></span></p>
+        <p><strong>Precio:</strong> <span id="detallePrecio"></span></p>
+      </div>
+      <a id="whatsapp" href="#" target="_blank"
+         style="display:inline-block;margin-top:1rem;padding:.5rem 1rem;background:#25D366;color:white;border-radius:4px;text-decoration:none;">
+         Contactar por WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- Admin -->
+  <section id="admin">
+    <button onclick="volverPrincipal()">← Volver</button>
+    <h2>Panel Admin</h2>
+    <form onsubmit="event.preventDefault(); crearPublicacion();">
+      <input type="text" id="titulo" placeholder="Título" required>
+      <textarea id="descripcion" placeholder="Descripción" rows="3" required></textarea>
+      <input type="text" id="ubicacion" placeholder="Ubicación" required>
+      <input type="number" id="precio" placeholder="Precio" required>
+      <select id="moneda">
+        <option value="USD">USD</option>
+        <option value="BOB">BOB</option>
+      </select>
+      <select id="categoria">
+        <option value="Venta">Venta</option>
+        <option value="Alquiler">Alquiler</option>
+        <option value="Anticrético">Anticrético</option>
+        <option value="Autos">Autos</option>
+      </select>
+      <input type="file" id="imagenes" accept="image/*" multiple>
+      <button type="submit">Guardar Publicación</button>
+    </form>
+
+    <h3>Logo</h3>
+    <input type="file" accept="image/*" onchange="cambiarLogo(event)">
+
+    <h3>Listado</h3>
+    <div id="adminListado"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <img id="footerLogo" src="assets/logo.png" alt="Experta Inmobiliaria" class="footer-logo">
+    <p>© 2025 Experta Inmobiliaria. Todos los derechos reservados.</p>
+  </footer>
+
 <script>
   let publicaciones = JSON.parse(localStorage.getItem("publicaciones")) || [];
   let logoGuardado = localStorage.getItem("logo");
   let imagenIndex = 0;
   let fotosDetalle = [];
-  let editIndex = null; // Nuevo: saber si estamos editando
+  let editIndex = null;
 
-  if (logoGuardado) document.getElementById("logo").src = logoGuardado;
-
-  function toggleMenu() {
-    let menu = document.getElementById("menuCategorias");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  if (logoGuardado) {
+    document.getElementById("logo").src = logoGuardado;
+    document.getElementById("footerLogo").src = logoGuardado;
   }
 
   function accederAdmin() {
@@ -19,11 +210,8 @@
       document.querySelector(".contenedor").style.display = "none";
       document.getElementById("detalle").style.display = "none";
       mostrarAdminListado();
-    } else {
-      alert("Contraseña incorrecta");
-    }
+    } else { alert("Contraseña incorrecta"); }
   }
-
   function volverPrincipal() {
     document.getElementById("admin").style.display = "none";
     document.querySelector(".contenedor").style.display = "grid";
@@ -36,11 +224,9 @@
     const ubicacion = document.getElementById("ubicacion").value;
     const precio = document.getElementById("precio").value + " " + document.getElementById("moneda").value;
     const categoria = document.getElementById("categoria").value;
-
     const imagenes = [];
     const files = document.getElementById("imagenes").files;
 
-    // Si hay nuevas imágenes
     if (files.length > 0) {
       Array.from(files).forEach(file => {
         const reader = new FileReader();
@@ -53,10 +239,8 @@
         reader.readAsDataURL(file);
       });
     } else {
-      // Si no se subieron nuevas imágenes y estamos editando
       if (editIndex !== null) {
-        imagenes.push(...publicaciones[editIndex].imagenes);
-        guardarPublicacion({ titulo, descripcion, ubicacion, precio, categoria, imagenes });
+        guardarPublicacion({ titulo, descripcion, ubicacion, precio, categoria, imagenes: publicaciones[editIndex].imagenes });
       } else {
         alert("Debe subir al menos una imagen");
       }
@@ -64,12 +248,8 @@
   }
 
   function guardarPublicacion(publi) {
-    if (editIndex !== null) {
-      publicaciones[editIndex] = publi;
-      editIndex = null;
-    } else {
-      publicaciones.push(publi);
-    }
+    if (editIndex !== null) { publicaciones[editIndex] = publi; editIndex = null; }
+    else { publicaciones.push(publi); }
     localStorage.setItem("publicaciones", JSON.stringify(publicaciones));
     mostrarPublicaciones(publicaciones);
     mostrarAdminListado();
@@ -82,7 +262,7 @@
     lista.forEach((p, i) => {
       const card = document.createElement("div");
       card.className = "card";
-      card.innerHTML = `<img src="${p.imagenes[0]}" alt=""><h3>${p.titulo}</h3><p>${p.categoria}</p>`;
+      card.innerHTML = `<img src="${p.imagenes[0]}"><h3>${p.titulo}</h3><p>${p.categoria}</p>`;
       card.onclick = () => abrirDetalle(i);
       contenedor.appendChild(card);
     });
@@ -90,7 +270,6 @@
 
   function abrirDetalle(index) {
     const p = publicaciones[index];
-    document.getElementById("detalleTitulo").textContent = p.titulo;
     document.getElementById("detalleDesc").textContent = p.descripcion;
     document.getElementById("detalleUbicacion").textContent = p.ubicacion;
     document.getElementById("detallePrecio").textContent = p.precio;
@@ -101,40 +280,33 @@
       `https://wa.me/59161680077?text=Hola, me interesa este inmueble (${p.titulo}), quisiera agendar una cita para verlo por favor.`;
     document.getElementById("detalle").style.display = "flex";
   }
+  function cerrarDetalle(){ document.getElementById("detalle").style.display="none"; }
+  function cambiarFoto(dir){ imagenIndex=(imagenIndex+dir+fotosDetalle.length)%fotosDetalle.length;
+    document.getElementById("detalleImg").src=fotosDetalle[imagenIndex]; }
 
-  function cerrarDetalle() {
-    document.getElementById("detalle").style.display = "none";
+  function filtrarCategoria(cat){
+    if(cat==="todas") mostrarPublicaciones(publicaciones);
+    else mostrarPublicaciones(publicaciones.filter(p=>p.categoria===cat));
   }
 
-  function cambiarFoto(dir) {
-    imagenIndex = (imagenIndex + dir + fotosDetalle.length) % fotosDetalle.length;
-    document.getElementById("detalleImg").src = fotosDetalle[imagenIndex];
-  }
-
-  function filtrarCategoria(cat) {
-    if (cat === "todas") mostrarPublicaciones(publicaciones);
-    else mostrarPublicaciones(publicaciones.filter(p => p.categoria === cat));
-  }
-
-  function cambiarLogo(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        document.getElementById("logo").src = reader.result;
-        localStorage.setItem("logo", reader.result);
-      };
+  function cambiarLogo(event){
+    const file=event.target.files[0];
+    if(file){
+      const reader=new FileReader();
+      reader.onload=()=>{ document.getElementById("logo").src=reader.result;
+        document.getElementById("footerLogo").src=reader.result;
+        localStorage.setItem("logo",reader.result); };
       reader.readAsDataURL(file);
     }
   }
 
-  function mostrarAdminListado() {
-    const adminListado = document.getElementById("adminListado");
-    adminListado.innerHTML = "";
-    publicaciones.forEach((p, i) => {
-      const div = document.createElement("div");
-      div.className = "admin-item";
-      div.innerHTML = `
+  function mostrarAdminListado(){
+    const adminListado=document.getElementById("adminListado");
+    adminListado.innerHTML="";
+    publicaciones.forEach((p,i)=>{
+      const div=document.createElement("div");
+      div.className="admin-item";
+      div.innerHTML=`
         <div><img src="${p.imagenes[0]}"><strong>${p.titulo}</strong> - ${p.categoria}</div>
         <div class="admin-btns">
           <button onclick="editarPublicacion(${i})">Editar</button>
@@ -144,45 +316,45 @@
     });
   }
 
-  function editarPublicacion(index) {
-    const p = publicaciones[index];
-    document.getElementById("titulo").value = p.titulo;
-    document.getElementById("descripcion").value = p.descripcion;
-    document.getElementById("ubicacion").value = p.ubicacion;
-    document.getElementById("precio").value = parseFloat(p.precio);
-    document.getElementById("moneda").value = p.precio.includes("USD") ? "USD" : "BOB";
-    document.getElementById("categoria").value = p.categoria;
-    editIndex = index;
+  function editarPublicacion(index){
+    const p=publicaciones[index];
+    document.getElementById("titulo").value=p.titulo;
+    document.getElementById("descripcion").value=p.descripcion;
+    document.getElementById("ubicacion").value=p.ubicacion;
+    document.getElementById("precio").value=parseFloat(p.precio);
+    document.getElementById("moneda").value=p.precio.includes("USD")?"USD":"BOB";
+    document.getElementById("categoria").value=p.categoria;
+    editIndex=index;
   }
 
-  function eliminarPublicacion(index) {
-    if (confirm("¿Seguro que quieres eliminar esta publicación?")) {
-      publicaciones.splice(index, 1);
-      localStorage.setItem("publicaciones", JSON.stringify(publicaciones));
+  function eliminarPublicacion(index){
+    if(confirm("¿Seguro que quieres eliminar esta publicación?")){
+      publicaciones.splice(index,1);
+      localStorage.setItem("publicaciones",JSON.stringify(publicaciones));
       mostrarPublicaciones(publicaciones);
       mostrarAdminListado();
     }
   }
 
-  function limpiarFormulario() {
-    document.getElementById("titulo").value = "";
-    document.getElementById("descripcion").value = "";
-    document.getElementById("ubicacion").value = "";
-    document.getElementById("precio").value = "";
-    document.getElementById("imagenes").value = "";
-    editIndex = null;
+  function limpiarFormulario(){
+    document.getElementById("titulo").value="";
+    document.getElementById("descripcion").value="";
+    document.getElementById("ubicacion").value="";
+    document.getElementById("precio").value="";
+    document.getElementById("imagenes").value="";
+    editIndex=null;
   }
 
-  // Rotación de imágenes del hero
-  let heroIndex = 0;
-  const heroImgs = document.querySelectorAll(".hero img");
-  setInterval(() => {
+  // Hero rotación
+  let heroIndex=0;
+  const heroImgs=document.querySelectorAll(".hero img");
+  setInterval(()=>{
     heroImgs[heroIndex].classList.remove("active");
-    heroIndex = (heroIndex + 1) % heroImgs.length;
+    heroIndex=(heroIndex+1)%heroImgs.length;
     heroImgs[heroIndex].classList.add("active");
-  }, 3000);
+  },3000);
 
-  // Cargar publicaciones guardadas al inicio
   mostrarPublicaciones(publicaciones);
 </script>
-
+</body>
+</html>
