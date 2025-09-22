@@ -1,149 +1,188 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EXPERTA INMOBILIARIA</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-  <style>
-    body { margin: 0; padding: 0; font-family: Arial, sans-serif; background:#f9f9f9; color:#000;}
-    nav.site-nav {
-      background: #fff; border-bottom: 1px solid #eee;
-      padding: 0.5rem 2rem; display: flex; align-items: center; justify-content: space-between;
-    }
-    nav.site-nav img.logo { height: 50px; }
-    nav.site-nav ul { list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; }
-    nav.site-nav ul li { position: relative; }
-    nav.site-nav ul li a { text-decoration: none; color: #333; font-weight: 500; }
-    nav.site-nav ul li a:hover { color: #000; }
-    /* Dropdown */
-    .dropdown-content {
-      display: none; position: absolute; top: 100%; left: 0;
-      background: #fff; border: 1px solid #ddd; border-radius: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 10;
-    }
-    .dropdown-content a {
-      display: block; padding: 0.5rem 1rem; color: #333; text-decoration: none;
-    }
-    .dropdown-content a:hover { background:#eee; }
-    .dropdown:hover .dropdown-content { display: block; }
-
-    .hero {
-      background: #ddd url('https://source.unsplash.com/1600x600/?realestate,house') center/cover no-repeat;
-      color: white; padding: 4rem 2rem; text-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-bottom: 2rem;
-      text-align: center;
-    }
-    .hero h1 { margin: 0; font-size: 2.5rem; }
-    .hero p { margin-top: 1rem; font-size: 1.25rem; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; padding: 0 2rem;}
-    .card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: #fff; cursor:pointer;}
-    .card img { width:100%; height:200px; object-fit:cover; }
-    .card-content { padding: 1rem; }
-    .card-content h3 { margin: 0 0 .5rem 0; }
-    .card-content .muted { font-size: .9rem; color: #666; margin-bottom: .5rem; }
-    /* Modal */
-    #detailModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); overflow:auto; padding:2rem;}
-    #detailContent { background:#fff; border-radius:8px; max-width:700px; margin:auto; padding:1rem; color:#000;}
-    #detailContent img { width:100%; height:300px; object-fit:cover; border-radius:8px; margin-bottom:1rem;}
-    #dClose { float:right; cursor:pointer; font-size:1.5rem; }
-    footer.site-footer { background:#f1f1f1; padding:2rem; margin-top:3rem; color:#555; text-align:center; }
-    footer img.footer-logo { height:40px; margin-bottom:1rem; }
-    .socials a { margin-right:.5rem; text-decoration:none; color:#555; }
-    .socials a:hover { color:#000; }
-    .detail-info { margin-bottom:1rem; }
-    .detail-info strong { display:block; margin-bottom:.2rem; }
-    .whatsapp-btn { display:inline-block; padding:.7rem 1.2rem; background:#25D366; color:white; border-radius:6px; text-decoration:none; font-weight:bold;}
-    .whatsapp-btn:hover{background:#1ebe5a;}
-  </style>
-</head>
-<body>
-  <nav class="site-nav">
-    <div><img id="logo" src="assets/logo.png" alt="Experta Inmobiliaria" class="logo"></div>
-    <ul>
-      <li><a href="#inicio">Inicio</a></li>
-      <li class="dropdown">
-        <a href="#">Menú ▾</a>
-        <div class="dropdown-content">
-          <a href="#" onclick="filterCategory('Todos')">Todos</a>
-          <a href="#" onclick="filterCategory('Venta')">Venta</a>
-          <a href="#" onclick="filterCategory('Alquiler')">Alquiler</a>
-          <a href="#" onclick="filterCategory('Anticrético')">Anticrético</a>
-          <a href="#" onclick="filterCategory('Autos')">Autos</a>
-        </div>
-      </li>
-      <li><a href="#contacto">Contáctenos</a></li>
-      <li><a href="admin.html">Admin</a></li>
-    </ul>
-  </nav>
-
-  <main>
-    <section class="hero" id="inicio">
-      <h1>Bienvenido a Experta Inmobiliaria</h1>
-      <p>Alquiler, Anticrético y Ventas</p>
-    </section>
-    <section>
-      <div class="cards" id="publicaciones"></div>
-    </section>
-  </main>
-
-  <!-- Modal detalle -->
-  <div id="detailModal">
-    <div id="detailContent">
-      <span id="dClose">&times;</span>
-      <h2 id="dTitle"></h2>
-      <img id="dImage" src="" alt="">
-      <div class="detail-info"><strong>Descripción:</strong><span id="dDescripcion"></span></div>
-      <div class="detail-info"><strong>Ubicación:</strong><span id="dUbicacion"></span></div>
-      <div class="detail-info"><strong>Precio:</strong><span id="dPrecio"></span></div>
-      <a id="wspLink" href="#" target="_blank" class="whatsapp-btn">Contactar por WhatsApp</a>
-    </div>
-  </div>
-
-  <footer class="site-footer">
-    <img id="footerLogo" src="assets/logo.png" alt="Experta Inmobiliaria" class="footer-logo">
-    <p>© 2025 Experta Inmobiliaria. Todos los derechos reservados.</p>
-    <div class="socials"><a href="#">Facebook</a><a href="#">Instagram</a><a href="#">TikTok</a></div>
-  </footer>
-
 <script>
-/* Logo dinámico */
-const savedLogo = localStorage.getItem('logo');
-if (savedLogo) { document.getElementById('logo').src = savedLogo; document.getElementById('footerLogo').src = savedLogo; }
+  let publicaciones = JSON.parse(localStorage.getItem("publicaciones")) || [];
+  let logoGuardado = localStorage.getItem("logo");
+  let imagenIndex = 0;
+  let fotosDetalle = [];
+  let editIndex = null; // Nuevo: saber si estamos editando
 
-/* Publicaciones */
-let publicaciones = JSON.parse(localStorage.getItem('publicaciones')||'[]');
-let currentCategory='Todos';
-function renderPublicaciones(){
-  const container=document.getElementById('publicaciones'); container.innerHTML='';
-  publicaciones.filter(pub=> currentCategory==='Todos'|| pub.tipo===currentCategory )
-  .forEach(pub=>{
-    const card=document.createElement('div');
-    card.className='card';
-    card.innerHTML=`
-      <img src="${pub.images[0]}" alt="">
-      <div class="card-content">
-        <h3>${pub.titulo}</h3>
-        <p class="muted">${pub.tipo}</p>
-        <p><strong>${pub.precio}</strong></p>
-      </div>`;
-    card.onclick=()=>showDetail(pub);
-    container.appendChild(card);
-  });
-}
-function filterCategory(cat){ currentCategory=cat; renderPublicaciones(); }
-function showDetail(pub){
-  document.getElementById('detailModal').style.display='block';
-  document.getElementById('dTitle').textContent=pub.titulo;
-  document.getElementById('dImage').src=pub.images[0];
-  document.getElementById('dDescripcion').textContent=pub.descripcion;
-  document.getElementById('dUbicacion').textContent=pub.ubicacion;
-  document.getElementById('dPrecio').textContent=pub.precio;
-  const msg=encodeURIComponent("Hola, me interesa este inmueble, quisiera agendar una cita para verlo por favor.");
-  document.getElementById('wspLink').href=`https://wa.me/59161680077?text=${msg}`;
-}
-document.getElementById('dClose').onclick=()=>{document.getElementById('detailModal').style.display='none';}
-window.onclick=e=>{if(e.target==document.getElementById('detailModal')){document.getElementById('detailModal').style.display='none';}};
-renderPublicaciones();
+  if (logoGuardado) document.getElementById("logo").src = logoGuardado;
+
+  function toggleMenu() {
+    let menu = document.getElementById("menuCategorias");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  }
+
+  function accederAdmin() {
+    let pass = prompt("Ingrese la contraseña:");
+    if (pass === "solerolu") {
+      document.getElementById("admin").style.display = "block";
+      document.querySelector(".contenedor").style.display = "none";
+      document.getElementById("detalle").style.display = "none";
+      mostrarAdminListado();
+    } else {
+      alert("Contraseña incorrecta");
+    }
+  }
+
+  function volverPrincipal() {
+    document.getElementById("admin").style.display = "none";
+    document.querySelector(".contenedor").style.display = "grid";
+    limpiarFormulario();
+  }
+
+  function crearPublicacion() {
+    const titulo = document.getElementById("titulo").value;
+    const descripcion = document.getElementById("descripcion").value;
+    const ubicacion = document.getElementById("ubicacion").value;
+    const precio = document.getElementById("precio").value + " " + document.getElementById("moneda").value;
+    const categoria = document.getElementById("categoria").value;
+
+    const imagenes = [];
+    const files = document.getElementById("imagenes").files;
+
+    // Si hay nuevas imágenes
+    if (files.length > 0) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          imagenes.push(reader.result);
+          if (imagenes.length === files.length) {
+            guardarPublicacion({ titulo, descripcion, ubicacion, precio, categoria, imagenes });
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    } else {
+      // Si no se subieron nuevas imágenes y estamos editando
+      if (editIndex !== null) {
+        imagenes.push(...publicaciones[editIndex].imagenes);
+        guardarPublicacion({ titulo, descripcion, ubicacion, precio, categoria, imagenes });
+      } else {
+        alert("Debe subir al menos una imagen");
+      }
+    }
+  }
+
+  function guardarPublicacion(publi) {
+    if (editIndex !== null) {
+      publicaciones[editIndex] = publi;
+      editIndex = null;
+    } else {
+      publicaciones.push(publi);
+    }
+    localStorage.setItem("publicaciones", JSON.stringify(publicaciones));
+    mostrarPublicaciones(publicaciones);
+    mostrarAdminListado();
+    limpiarFormulario();
+  }
+
+  function mostrarPublicaciones(lista) {
+    const contenedor = document.getElementById("publicaciones");
+    contenedor.innerHTML = "";
+    lista.forEach((p, i) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<img src="${p.imagenes[0]}" alt=""><h3>${p.titulo}</h3><p>${p.categoria}</p>`;
+      card.onclick = () => abrirDetalle(i);
+      contenedor.appendChild(card);
+    });
+  }
+
+  function abrirDetalle(index) {
+    const p = publicaciones[index];
+    document.getElementById("detalleTitulo").textContent = p.titulo;
+    document.getElementById("detalleDesc").textContent = p.descripcion;
+    document.getElementById("detalleUbicacion").textContent = p.ubicacion;
+    document.getElementById("detallePrecio").textContent = p.precio;
+    fotosDetalle = p.imagenes;
+    imagenIndex = 0;
+    document.getElementById("detalleImg").src = fotosDetalle[imagenIndex];
+    document.getElementById("whatsapp").href =
+      `https://wa.me/59161680077?text=Hola, me interesa este inmueble (${p.titulo}), quisiera agendar una cita para verlo por favor.`;
+    document.getElementById("detalle").style.display = "flex";
+  }
+
+  function cerrarDetalle() {
+    document.getElementById("detalle").style.display = "none";
+  }
+
+  function cambiarFoto(dir) {
+    imagenIndex = (imagenIndex + dir + fotosDetalle.length) % fotosDetalle.length;
+    document.getElementById("detalleImg").src = fotosDetalle[imagenIndex];
+  }
+
+  function filtrarCategoria(cat) {
+    if (cat === "todas") mostrarPublicaciones(publicaciones);
+    else mostrarPublicaciones(publicaciones.filter(p => p.categoria === cat));
+  }
+
+  function cambiarLogo(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("logo").src = reader.result;
+        localStorage.setItem("logo", reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function mostrarAdminListado() {
+    const adminListado = document.getElementById("adminListado");
+    adminListado.innerHTML = "";
+    publicaciones.forEach((p, i) => {
+      const div = document.createElement("div");
+      div.className = "admin-item";
+      div.innerHTML = `
+        <div><img src="${p.imagenes[0]}"><strong>${p.titulo}</strong> - ${p.categoria}</div>
+        <div class="admin-btns">
+          <button onclick="editarPublicacion(${i})">Editar</button>
+          <button onclick="eliminarPublicacion(${i})">Eliminar</button>
+        </div>`;
+      adminListado.appendChild(div);
+    });
+  }
+
+  function editarPublicacion(index) {
+    const p = publicaciones[index];
+    document.getElementById("titulo").value = p.titulo;
+    document.getElementById("descripcion").value = p.descripcion;
+    document.getElementById("ubicacion").value = p.ubicacion;
+    document.getElementById("precio").value = parseFloat(p.precio);
+    document.getElementById("moneda").value = p.precio.includes("USD") ? "USD" : "BOB";
+    document.getElementById("categoria").value = p.categoria;
+    editIndex = index;
+  }
+
+  function eliminarPublicacion(index) {
+    if (confirm("¿Seguro que quieres eliminar esta publicación?")) {
+      publicaciones.splice(index, 1);
+      localStorage.setItem("publicaciones", JSON.stringify(publicaciones));
+      mostrarPublicaciones(publicaciones);
+      mostrarAdminListado();
+    }
+  }
+
+  function limpiarFormulario() {
+    document.getElementById("titulo").value = "";
+    document.getElementById("descripcion").value = "";
+    document.getElementById("ubicacion").value = "";
+    document.getElementById("precio").value = "";
+    document.getElementById("imagenes").value = "";
+    editIndex = null;
+  }
+
+  // Rotación de imágenes del hero
+  let heroIndex = 0;
+  const heroImgs = document.querySelectorAll(".hero img");
+  setInterval(() => {
+    heroImgs[heroIndex].classList.remove("active");
+    heroIndex = (heroIndex + 1) % heroImgs.length;
+    heroImgs[heroIndex].classList.add("active");
+  }, 3000);
+
+  // Cargar publicaciones guardadas al inicio
+  mostrarPublicaciones(publicaciones);
 </script>
-</body>
-</html>
+
